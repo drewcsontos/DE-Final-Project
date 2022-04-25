@@ -32,6 +32,7 @@ public class Bullet extends GameObject{
         this.direction = direction;
         this.walls = walls;
         this.objectList = objectList;
+
     }
     @Override
     public void render(Batch batch){
