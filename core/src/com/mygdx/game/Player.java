@@ -9,11 +9,12 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 import box2dLight.PointLight;
 
 public class Player extends GameObject{
-    float moveSpeed = 37.5f;
+    float moveSpeed = 80f;
     MapObjects walls;
     static Texture[] playerLeftTextures;
     static Texture[] playerRightTextures;
@@ -34,18 +35,22 @@ public class Player extends GameObject{
     @Override
     public void render(Batch batch){
         super.render(batch);
+    }
+    public void update(){
         defaultUpdateLight();
         boolean hasMoved = false;
-        if(time > 2f){
+        if(time > 1f){
             playerAnimationIndex += 1;
             if(playerAnimationIndex == playerRightTextures.length){
                 playerAnimationIndex = 0;
             }
             time = 0f;
         }
+        direction = new Vector2(0,0);
         if(Gdx.input.isKeyPressed(Input.Keys.D)){
             hasMoved = true;
             boolean canMove = true;
+            direction.x += 1;
             for (RectangleMapObject rectangleObject : walls.getByType(RectangleMapObject.class)) {
                 Rectangle rectangle = new Rectangle(rectangleObject.getRectangle());
                 rectangle.setX(rectangle.getX() - 2);
@@ -62,6 +67,7 @@ public class Player extends GameObject{
         if(Gdx.input.isKeyPressed(Input.Keys.A)){
             hasMoved = true;
             boolean canMove = true;
+            direction.x -= 1;
             for (RectangleMapObject rectangleObject : walls.getByType(RectangleMapObject.class)) {
                 Rectangle rectangle = new Rectangle(rectangleObject.getRectangle());
                 rectangle.setX(rectangle.getX() + 2);
@@ -78,6 +84,7 @@ public class Player extends GameObject{
         if(Gdx.input.isKeyPressed(Input.Keys.S)){
             hasMoved = true;
             boolean canMove = true;
+            direction.y -= 1;
             for (RectangleMapObject rectangleObject : walls.getByType(RectangleMapObject.class)) {
                 Rectangle rectangle = new Rectangle(rectangleObject.getRectangle());
                 rectangle.setY(rectangle.getY() + 2);
@@ -93,6 +100,7 @@ public class Player extends GameObject{
         if(Gdx.input.isKeyPressed(Input.Keys.W)){
             hasMoved = true;
             boolean canMove = true;
+            direction.y += 1;
             for (RectangleMapObject rectangleObject : walls.getByType(RectangleMapObject.class)) {
                 Rectangle rectangle = new Rectangle(rectangleObject.getRectangle());
                 rectangle.setY(rectangle.getY() - 2);
@@ -106,8 +114,8 @@ public class Player extends GameObject{
             }
         }
 //        if(!hasMoved){
-            sprite.setTexture(defaultPlayerTexture);
-       // }
+        sprite.setTexture(defaultPlayerTexture);
+        // }
 
     }
 }

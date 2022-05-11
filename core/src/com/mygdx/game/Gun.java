@@ -14,22 +14,21 @@ import java.util.List;
 
 import box2dLight.PointLight;
 
-public class Bullet extends GameObject{
+public class Gun extends GameObject{
 
     static Texture[] textures;
     int animationIndex = 0;
     MapObjects walls;
     List<GameObject> objectList;
-    float speed;
-    public Bullet(Vector2 spawnPosition, Vector2 direction, float speed, MapObjects walls, List<GameObject> objectList, PointLight light) {
-        super(new Sprite(new Texture("bullet.png")), light);
+    int movingRight = 1;
+    int health = 10;
+    public Gun(Vector2 spawnPosition, float speed, MapObjects walls, List<GameObject> objectList, PointLight light) {
+        super(new Sprite(new Texture("gunEnemy.png")), light);
         sprite.setOrigin(0,0);
         sprite.setPosition(spawnPosition.x, spawnPosition.y);
-        if(textures == null){
-            textures = new Texture[]{new Texture("bullet.png") };
-        }
-        this.speed = speed;
-        this.direction = direction;
+//        if(textures == null){
+//            textures = new Texture[]{new Texture("bullet.png") };
+//        }
         this.walls = walls;
         this.objectList = objectList;
 
@@ -37,17 +36,33 @@ public class Bullet extends GameObject{
     @Override
     public void render(Batch batch){
         super.render(batch);
+
+        //sprite.translate(direction.x * Gdx.graphics.getDeltaTime(), direction.y * Gdx.graphics.getDeltaTime());
+    }
+    public void update(){
         defaultUpdateLight();
+        float change = 5f * Gdx.graphics.getDeltaTime() * movingRight;
         for (RectangleMapObject rectangleObject : walls.getByType(RectangleMapObject.class)) {
             Rectangle rectangle = new Rectangle(rectangleObject.getRectangle());
-            rectangle.setX(rectangle.getX() + direction.x * Gdx.graphics.getDeltaTime());
-            rectangle.setY(rectangle.getY() + direction.y * Gdx.graphics.getDeltaTime());
+            rectangle.setX(rectangle.getX() + change * Gdx.graphics.getDeltaTime());
             if (Intersector.overlaps(rectangle, this.sprite.getBoundingRectangle())) {
                 System.out.println("Collision");
-                this.remove();
+                movingRight *= -1;
+                change *= -1;
+                sprite.flip(true,false);
+            }
+            sprite.translateX(change);
+        }
+        for(GameObject obj : objectList){
+            if(obj instanceof Bullet){
+                if (Intersector.overlaps(obj.sprite.getBoundingRectangle(), this.sprite.getBoundingRectangle())){
+                    health--;
+                    obj.remove();
+                }
             }
         }
-        sprite.translate(direction.x * speed * Gdx.graphics.getDeltaTime(), direction.y * speed * Gdx.graphics.getDeltaTime());
-
+        if(health<1){
+            remove();
+        }
     }
 }

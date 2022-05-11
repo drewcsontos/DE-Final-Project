@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 
 import box2dLight.PointLight;
 
@@ -27,14 +28,18 @@ public class Cat extends GameObject{
     @Override
     public void render(Batch batch){
         super.render(batch);
+
+    }
+    public void update(){
         defaultUpdateLight();
+        direction = new Vector2(0,0);
         if(sprite.getX() < player.sprite.getX() && sprite.isFlipX()){
             sprite.flip(true, false);
         }
         else if (sprite.getX() > player.sprite.getX() && ! sprite.isFlipX() ){
             sprite.flip(true, false);
         }
-        if(time > .2f){
+        if(time > .1f){
             catAnimationIndex += 1;
             if(catAnimationIndex == catTextures.length){
                 catAnimationIndex = 0;
@@ -53,9 +58,11 @@ public class Cat extends GameObject{
 //				sprite.flip(true, false);
 //			}
             if(sprite.getX() - player.sprite.getX() > 0){
+                direction.x = -1;
                 sprite.translateX((Math.round(player.sprite.getX() + 30 - sprite.getX()) * catLerp * Gdx.graphics.getDeltaTime()));
             }
             else{
+                direction.x = 1;
                 sprite.translateX((Math.round(player.sprite.getX() - 30 - sprite.getX()) * catLerp * Gdx.graphics.getDeltaTime()));
             }
             //light.setPosition(sprite.getX(),sprite.getY());

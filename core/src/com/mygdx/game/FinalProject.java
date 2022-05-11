@@ -78,8 +78,9 @@ public class FinalProject extends ApplicationAdapter {
 		handler.setCulling(true);
 		handler.setShadows(true);
 		PointLight lightOrange = new PointLight(handler, 10000 , new Color(.96f,.6f,.32f, 1),100,-5,-5);
+		PointLight lightRed = new PointLight(handler, 10000 , new Color(1,0,0, 1),100,-5,-5);
 
-		PointLight lightWhite = new PointLight(handler, 100 , new Color(1,1,1, 1),100,-5,-5);
+		PointLight lightWhite = new PointLight(handler, 100 , new Color(1,1,1, 1),200,-5,-5);
 
 		batch = new SpriteBatch();
 
@@ -96,12 +97,15 @@ public class FinalProject extends ApplicationAdapter {
 			shape.set(new Vector2[]{new Vector2(0,0), new Vector2(0, 10), new Vector2(10,10), new Vector2(10, 0)});
 		}
 		mainPlayer = new Player(walls, lightWhite);
+
 		mainPlayer.sprite.translate(30,30);
 		cat = new Cat(mainPlayer, lightOrange);
 		gameObjects = new ArrayList<GameObject>();
+		Gun gunEnemy = new Gun(new Vector2(50,50), 50f, walls, gameObjects, lightRed);
+		gameObjects.add(gunEnemy);
 		gameObjects.add(mainPlayer);
 		gameObjects.add(cat);
-		createSquareBody();
+		//createSquareBody();
 		//camera.zoom = 5;
 	}
 
@@ -112,19 +116,19 @@ public class FinalProject extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
 			PointLight red = new PointLight(handler, 100, new Color(1,0,0,1), 20, 0f, 0f);
-			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(1,0), 50f, walls, gameObjects, red));
+			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(1,0), 100f, walls, gameObjects, red));
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
 			PointLight red = new PointLight(handler, 100, new Color(1,0,0,1), 20, 0f, 0f);
-			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(-1,0), 50f, walls, gameObjects, red));
+			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(-1,0), 100f, walls, gameObjects, red));
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
 			PointLight red = new PointLight(handler, 100, new Color(1,0,0,1), 20, 0f, 0f);
-			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(0,1), 50f, walls, gameObjects, red));
+			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(0,1), 100f, walls, gameObjects, red));
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
 			PointLight red = new PointLight(handler, 100, new Color(1,0,0,1), 20, 0f, 0f);
-			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(0,-1), 50f, walls, gameObjects, red));
+			gameObjects.add(new Bullet(new Vector2(mainPlayer.getX() + 10, mainPlayer.getY() + 5), new Vector2(0,-1), 100f, walls, gameObjects, red));
 		}
 		batch.begin();
 		tiledMapRenderer.setView(camera);
@@ -135,14 +139,13 @@ public class FinalProject extends ApplicationAdapter {
 		for(int i=0;i<gameObjects.size();i++){
 			GameObject obj = gameObjects.get(i);
 			obj.render(batch);
+			obj.update();
 			if(obj.shouldRemove){
 				gameObjects.remove(i);
 				i--;
 			}
 		}
- 		for(GameObject object : gameObjects){
-			object.render(batch);
-		}
+
 
 		camera.position.x += (Math.floor(mainPlayer.sprite.getX() + deltaX - camera.position.x) * lerp * Gdx.graphics.getDeltaTime());
 		camera.position.y += (Math.floor(mainPlayer.sprite.getY() + deltaY - camera.position.y) * lerp * Gdx.graphics.getDeltaTime());
@@ -164,6 +167,7 @@ public class FinalProject extends ApplicationAdapter {
 
 		handler.setCombinedMatrix(camera);
 		handler.updateAndRender();
+		//transition();
 	}
 	@Override
 	public void resize(int width, int height) {
@@ -175,6 +179,20 @@ public class FinalProject extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+	}
+	private void transition(){
+		SpriteBatch batch2 = new SpriteBatch();
+		Texture catTexture = Cat.catTextures[0];
+
+		batch2.begin();
+		System.out.println(Gdx.graphics.getWidth());
+		for(int i=1;i<100;i++){
+			for(int j=1;j<200;j++){
+				batch2.draw(catTexture, Gdx.graphics.getWidth()/j, Gdx.graphics.getHeight()/i, Gdx.graphics.getWidth()/(26), Gdx.graphics.getHeight()/(18));
+			}
+		}
+		batch2.end();
+
 	}
 	private void createSquareBody() {
 		//create definition
